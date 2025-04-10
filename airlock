@@ -76,8 +76,7 @@ remove() {
 
 resetenv() {
   if [ -d $envpath ]; then
-    cd $envpath
-    rm -rf env
+    rm -rf $envpath
   fi
   init
 }
