@@ -50,18 +50,18 @@ activate() {
 }
 
 init() {
-  if ! [ -d $envpath ]; then 
+  if ! [ -d $envpath ]; then
     mkdir $envpath > /dev/null
     cd $envpath  > /dev/null
     python3 -m venv $env  > /dev/null
     announce "env $env successfully initilized"
   else
     announce "env $env already initialized"
-  fi  
+  fi
 }
 
 configurepip() {
-  cp $pipconfigpath $envpath/$env 
+  cp $pipconfigpath $envpath/$env
 }
 
 del() {
@@ -121,35 +121,44 @@ maybeCreateCache
 # init
 if [ "$cmd" = "$init" ]; then
   init
+  exit 0
 fi
 
 # del
 if [ "$cmd" = "$del" ]; then
   del
+  exit 0
 fi
 
 # select
 if [ "$cmd" = "$select" ]; then
   selectEnv
+  exit 0
 fi;
 
 # config-pip
 if [ "$cmd" = "$configpip" ]; then
   configurepip
+  exit 0
 fi
 
 # reset
 if [ "$cmd" = "$reset" ]; then
   resetenv
+  exit 0
 fi
 
 # clear
 if [ "$cmd" = "$clear" ]; then
   clear
+  exit 0
 fi
 
 # list
 if [ "$cmd" = "$list" ]; then
   list
+  exit 0
 fi
 
+# if we get here just print usage
+usage
