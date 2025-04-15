@@ -1,0 +1,164 @@
+#!/bin/bash
+
+cmd=$1
+env=$2
+pipconfigpath=$3
+cache="$HOME/.airlock"
+
+# commands
+reset="reset"
+clear="clear"
+list="list"
+init="init"
+del="del"
+select="select"
+configpip="config-pip"
+help="help"
+
+# appearance
+opengreen='\033[32m'
+closegreen='\033[0m'
+
+# set up
+envpath=$cache/$env
+
+usage() {
+  echo "Usage: [source] airlock <cmd> [env]"
+  echo "Commands:"
+  echo "  init       | initialize a new virtual env for management by airlock                           | airlock init my-new-env"
+  echo "  select     | select an airlock-managed virtual environment for use (note the usage of source) | source airlock select my-new-env"
+  echo "  reset      | reset a virtual environment entirely                                             | airlock reset my-existing-env"
+  echo "  clear      | clear out all existing virtual environments managed by airlock                   | airlock clear"
+  echo "  list       | list all existing virtual environments managed by airlock                        | airlock list"
+  echo "  del        | delete an existing virtual environment managed by airlock                        | airlock del my-virtual-env"
+  echo "  help       | show usage                                                                       | airlock help"
+  echo "  config-pip | configure and airlock-managed virtual env with a pip config file                 | airlock config-pip my-env /path/to/pip.conf"
+}
+
+announce () {
+  echo -e "${opengreen}${1}${closegreen}"
+}
+
+deactivate() {
+  deactivate || true
+}
+
+activate() {
+  source $envpath/$env/bin/activate
+}
+
+init() {
+  if ! [ -d $envpath ]; then
+    mkdir $envpath > /dev/null
+    cd $envpath  > /dev/null
+    python3 -m venv $env  > /dev/null
+    announce "env $env successfully initilized"
+  else
+    announce "env $env already initialized"
+  fi
+}
+
+configurepip() {
+  cp $pipconfigpath $envpath/$env
+}
+
+del() {
+  rm -rf $envpath || true > /dev/null
+  announce "env $env deleted"
+}
+
+remove() {
+  rm $envpath || true
+  announce "env $env removed"
+}
+
+resetenv() {
+  if [ -d $envpath ]; then
+    rm -rf $envpath
+  fi
+  init
+}
+
+maybeCreateCache() {
+  if ! [ -d $cache ]; then
+    mkdir $cache > /dev/null
+  fi
+}
+
+clear() {
+  rm -rf $cache
+  maybeCreateCache
+}
+
+selectEnv() {
+  if [ -d $envpath ]; then
+    source $envpath/$env/bin/activate
+  else
+    announce "env $env not found"
+  fi
+}
+
+list() {
+  if [ -d $cache ]; then
+    cd $cache
+    ls
+  fi
+}
+
+#################
+# meat/potatoes #
+#################
+maybeCreateCache
+
+# init
+if [ "$cmd" = "$init" ]; then
+  init
+fi
+
+# del
+if [ "$cmd" = "$del" ]; then
+  del
+fi
+
+# select
+if [ "$cmd" = "$select" ]; then
+  selectEnv
+fi;
+
+# config-pip
+if [ "$cmd" = "$configpip" ]; then
+  configurepip
+fi
+
+# reset
+if [ "$cmd" = "$reset" ]; then
+  resetenv
+fi
+
+# clear
+if [ "$cmd" = "$clear" ]; then
+  clear
+fi
+
+# list
+if [ "$cmd" = "$list" ]; then
+  list
+fi
+
+# help
+if [ "$cmd" = "$help" ] || [ "$cmd" = "" ]; then
+  usage
+else
+  list=($reset $clear $list $init $del $select $configpip $help)
+  found=false
+  for item in "${list[@]}"; do
+    if [[ "$item" == "$cmd" ]]; then
+      found=true
+      break
+    fi
+  done
+  if ! $found; then
+    printf "%s is not a supported command\n" $cmd
+    usage
+  fi
+fi
