@@ -20,7 +20,7 @@ __Note:__ the `select` command is to be used in conjunction with `source`. See c
 |  `init` | `env`  | initialize a new virtual env for management by airlock | `airlock init my-venv` |
 | `select`| `env`  | select an airlock-managed virtual environment for use (note the usage of source) | `source airlock select my-venv` |
 | `reset` | `env` | reset a virtual environment entirely | `airlock reset my-venv` |
-| `clear` | N/A   | clear out all existing virtual environments managed by airlock | `airlock clear` |
+| `nuke` | N/A   | clear out all existing virtual environments managed by airlock | `airlock nuke` |
 | `list`  | N/A   | list all existing virtual environments managed by airlock | `airlock list` |
 | `del`   | `env` | delete an existing virtual environment managed by airlock | `airlock del my-venv` |
 | `help`  | N/A   | show usage | `airlock help` |
