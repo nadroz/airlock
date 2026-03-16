@@ -7,7 +7,7 @@ cache="$HOME/.airlock"
 
 # commands
 reset="reset"
-clear="clear"
+nuke="nuke"
 list="list"
 init="init"
 del="del"
@@ -28,7 +28,7 @@ usage() {
   echo "  init       | initialize a new virtual env for management by airlock                           | airlock init my-new-env"
   echo "  select     | select an airlock-managed virtual environment for use (note the usage of source) | source airlock select my-new-env"
   echo "  reset      | reset a virtual environment entirely                                             | airlock reset my-existing-env"
-  echo "  clear      | clear out all existing virtual environments managed by airlock                   | airlock clear"
+  echo "  nuke       | nuke out all existing virtual environments managed by airlock                    | airlock nuke"
   echo "  list       | list all existing virtual environments managed by airlock                        | airlock list"
   echo "  del        | delete an existing virtual environment managed by airlock                        | airlock del my-virtual-env"
   echo "  help       | show usage                                                                       | airlock help"
@@ -85,7 +85,7 @@ maybeCreateCache() {
   fi
 }
 
-clear() {
+nuke() {
   rm -rf $cache
   maybeCreateCache
 }
@@ -135,9 +135,9 @@ if [ "$cmd" = "$reset" ]; then
   resetenv
 fi
 
-# clear
-if [ "$cmd" = "$clear" ]; then
-  clear
+# nuke
+if [ "$cmd" = "$nuke" ]; then
+  nuke
 fi
 
 # list
@@ -149,7 +149,7 @@ fi
 if [ "$cmd" = "$help" ] || [ "$cmd" = "" ]; then
   usage
 else
-  list=($reset $clear $list $init $del $select $configpip $help)
+  list=($reset $nuke $list $init $del $select $configpip $help)
   found=false
   for item in "${list[@]}"; do
     if [[ "$item" == "$cmd" ]]; then
